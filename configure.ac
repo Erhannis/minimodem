@@ -87,9 +87,7 @@ AC_DEFINE_UNQUOTED([USE_BENCHMARKS], [$use_benchmarks],
                    [Define to 1 to enable internal benchmarks])
 
 #   fft mode
-if test -z $FFT_MODE; then
-    FFT_MODE=1
-fi
+: ${FFT_MODE=1}
 AC_ARG_VAR([FFT_MODE], [1 for fftw3, 2 for //TODO WHAT GOES HERE])
 AC_DEFINE_UNQUOTED([FFT_MODE], [$FFT_MODE],
                    [1 for fftw3, 2 for //TODO WHAT GOES HERE])
