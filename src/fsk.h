@@ -17,16 +17,18 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#if(FFT_MODE == 1)
-#warning FFT_MODE 1
+#warning before
+#if(FFTMODE == 1)
+#warning FFTMODE 1
 #include <fftw3.h>
-#elif(FFT_MODE == 2)
-#warning FFT_MODE 2
+#elif(FFTMODE == 2)
+#warning FFTMODE 2
 #include <kiss_fftr.h>
 #else
-#warning FFT_MODE ???
-#error Unsupported FFT_MODE
+#warning FFTMODE ???
+#error Unsupported FFTMODE
 #endif
+#warning after
 
 typedef struct fsk_plan fsk_plan;
 
@@ -36,18 +38,18 @@ struct fsk_plan {
     	float		f_space;
 	float		filter_bw;
 
-#if(FFT_MODE == 1 || FFT_MODE == 2)
+#if(FFTMODE == 1 || FFTMODE == 2)
 	int		fftsize;
 	unsigned int	nbands;
 	float		band_width;
 	unsigned int	b_mark;
 	unsigned int	b_space;
 #endif
-#if(FFT_MODE == 1)
+#if(FFTMODE == 1)
 	fftwf_plan	fftplan;
 	float		*fftin;
 	fftwf_complex	*fftout;
-#elif(FFT_MODE == 2)
+#elif(FFTMODE == 2)
         kiss_fftr_cfg    fftcfg;
         kiss_fft_cpx    *fin;
         kiss_fft_cpx    *fout;

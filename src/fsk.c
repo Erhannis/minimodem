@@ -46,7 +46,7 @@ fsk_plan_new(
     fskp->f_mark = f_mark;
     fskp->f_space = f_space;
 
-#if(FFT_MODE == 1 || FFT_MODE == 2)
+#if(FFTMODE == 1 || FFTMODE == 2)
     fskp->band_width = filter_bw;
 
     float fft_half_bw = fskp->band_width / 2.0f;
@@ -66,7 +66,7 @@ fsk_plan_new(
 	    fskp->b_mark, fskp->b_space, fskp->fftsize);
 #endif
 
-#if(FFT_MODE == 1)
+#if(FFTMODE == 1)
     // FIXME:
     unsigned int pa_nchannels = 1;
 
@@ -90,7 +90,7 @@ fsk_plan_new(
 	errno = EINVAL;
         return NULL;
     }
-#elif(FFT_MODE == 2)
+#elif(FFTMODE == 2)
     // FIXME Channels not supported
 
     fskp->fftcfg = kiss_fftr_alloc(fskp->fftsize, 0, NULL, NULL);
@@ -104,7 +104,7 @@ fsk_plan_new(
     return fskp;
 }
 
-#if(FFT_MODE == 1)
+#if(FFTMODE == 1)
 void
 fsk_plan_destroy( fsk_plan *fskp )
 {
@@ -113,7 +113,7 @@ fsk_plan_destroy( fsk_plan *fskp )
     fftwf_destroy_plan(fskp->fftplan);
     free(fskp);
 }
-#elif(FFT_MODE == 2)
+#elif(FFTMODE == 2)
 void
 fsk_plan_destroy( fsk_plan *fskp )
 {
@@ -125,7 +125,7 @@ fsk_plan_destroy( fsk_plan *fskp )
 #endif
 
 
-#if(FFT_MODE == 1)
+#if(FFTMODE == 1)
 static inline float
 band_mag( fftwf_complex * const cplx, unsigned int band, float scalar )
 {
@@ -134,7 +134,7 @@ band_mag( fftwf_complex * const cplx, unsigned int band, float scalar )
     float mag = hypotf(re, im) * scalar;
     return mag;
 }
-#elif(FFT_MODE == 2)
+#elif(FFTMODE == 2)
 static inline float
 band_mag( kiss_fft_cpx * const cplx, unsigned int band, float scalar )
 {
@@ -159,7 +159,7 @@ fsk_bit_analyze( fsk_plan *fskp, float *samples, unsigned int bit_nsamples,
     // unsigned int pa_nchannels = 1;	// FIXME
     // bzero(fskp->fftin, (fskp->fftsize * sizeof(float) * pa_nchannels));
 
-#if(FFT_MODE == 1 || FFT_MODE == 2)
+#if(FFTMODE == 1 || FFTMODE == 2)
     memcpy(fskp->fftin, samples, bit_nsamples * sizeof(float));
 #endif
 
@@ -187,12 +187,12 @@ fsk_bit_analyze( fsk_plan *fskp, float *samples, unsigned int bit_nsamples,
     }
 #endif
 
-#if(FFT_MODE == 1)
+#if(FFTMODE == 1)
     fftwf_execute(fskp->fftplan);
-#elif(FFT_MODE == 2)
+#elif(FFTMODE == 2)
     kiss_fftr(cfg, cx_in, cx_out);
 #endif
-#if(FFT_MODE == 1 || FFT_MODE == 2)
+#if(FFTMODE == 1 || FFTMODE == 2)
     float mag_mark  = band_mag(fskp->fftout, fskp->b_mark,  magscalar);
     float mag_space = band_mag(fskp->fftout, fskp->b_space, magscalar);
 #endif
@@ -583,15 +583,15 @@ int
 fsk_detect_carrier(fsk_plan *fskp, float *samples, unsigned int nsamples,
 	float min_mag_threshold )
 {
-#if(FFT_MODE == 1 || FFT_MODE == 2)
+#if(FFTMODE == 1 || FFTMODE == 2)
     assert( nsamples <= fskp->fftsize );
 
     unsigned int pa_nchannels = 1;	// FIXME
-#if(FFT_MODE == 1)
+#if(FFTMODE == 1)
     bzero(fskp->fftin, (fskp->fftsize * sizeof(float) * pa_nchannels));
     memcpy(fskp->fftin, samples, nsamples * sizeof(float));
     fftwf_execute(fskp->fftplan);
-#elif(FFT_MODE == 2)
+#elif(FFTMODE == 2)
     bzero(fskp->fftin, (fskp->fftsize * sizeof(kiss_fft_scalar) * pa_nchannels));
     memcpy(fskp->fftin, samples, nsamples * sizeof(float)); // Uh...these OUGHT to be the same size....
     kiss_fft(fskp->fftcfg, fskp->fftin, fskp->fftout);
@@ -631,7 +631,7 @@ fsk_detect_carrier(fsk_plan *fskp, float *samples, unsigned int nsamples,
 void
 fsk_set_tones_by_bandshift( fsk_plan *fskp, unsigned int b_mark, int b_shift )
 {
-#if(FFT_MODE == 1 || FFT_MODE == 2)
+#if(FFTMODE == 1 || FFTMODE == 2)
     assert( b_shift != 0 );
     assert( b_mark < fskp->nbands ); 
 

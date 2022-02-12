@@ -89,7 +89,7 @@ AC_DEFINE_UNQUOTED([USE_BENCHMARKS], [$use_benchmarks],
 #   fft mode
 : ${FFT_MODE=1}
 AC_ARG_VAR([FFT_MODE], [1 for fftw3, 2 for kiss_fft])
-AC_DEFINE_UNQUOTED([FFT_MODE], [$FFT_MODE],
+AC_DEFINE_UNQUOTED([FFTMODE], [$FFT_MODE],
                    [1 for fftw3, 2 for kiss_fft])
 
 AC_MSG_RESULT([
