@@ -86,6 +86,14 @@ AS_IF([test "x$with_benchmarks" = "xno"], [
 AC_DEFINE_UNQUOTED([USE_BENCHMARKS], [$use_benchmarks],
                    [Define to 1 to enable internal benchmarks])
 
+#   fft mode
+if test -z $FFT_MODE; then
+    FFT_MODE=1
+fi
+AC_ARG_VAR([FFT_MODE], [1 for fftw3, 2 for //TODO WHAT GOES HERE])
+AC_DEFINE_UNQUOTED([FFT_MODE], [$FFT_MODE],
+                   [1 for fftw3, 2 for //TODO WHAT GOES HERE])
+
 AC_MSG_RESULT([
 option summary:
     alsa           $with_alsa ($use_alsa)
@@ -94,6 +102,7 @@ option summary:
     sndfile        $with_sndfile ($use_sndfile)
     stdio          $with_stdio ($use_stdio)
     sndio          $with_sndio ($use_sndio)
+    fft mode        ($FFT_MODE)
 ])
 
 # Checks for libraries.

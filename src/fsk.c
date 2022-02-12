@@ -46,7 +46,7 @@ fsk_plan_new(
     fskp->f_mark = f_mark;
     fskp->f_space = f_space;
 
-#ifdef USE_FFT
+#if(FFT_MODE == 1)
     fskp->band_width = filter_bw;
 
     float fft_half_bw = fskp->band_width / 2.0f;

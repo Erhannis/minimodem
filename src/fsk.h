@@ -17,11 +17,13 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if(FFT_MODE == 1)
+#warning fft mode 1
+#elif(FFT_MODE == 2)
+#warning fft mode 2
+#endif
 
-
-#define USE_FFT		// leave this enabled; its presently the only choice
-
-#ifdef USE_FFT
+#if(FFT_MODE == 1)
 #include <fftw3.h>
 #endif
 
@@ -33,7 +35,7 @@ struct fsk_plan {
     	float		f_space;
 	float		filter_bw;
 
-#ifdef USE_FFT
+#if(FFT_MODE == 1)
 	int		fftsize;
 	unsigned int	nbands;
 	float		band_width;
