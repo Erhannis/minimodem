@@ -13,7 +13,7 @@ AC_PROG_CC
 # Library Checks
 AC_SEARCH_LIBS([lroundf], [m])
 
-deps_packages="fftw3f"
+deps_packages=""
 
 #   ALSA
 AC_ARG_WITH([alsa], [AS_HELP_STRING([--without-alsa],
@@ -88,9 +88,9 @@ AC_DEFINE_UNQUOTED([USE_BENCHMARKS], [$use_benchmarks],
 
 #   fft mode
 : ${FFT_MODE=1}
-AC_ARG_VAR([FFT_MODE], [1 for fftw3, 2 for //TODO WHAT GOES HERE])
+AC_ARG_VAR([FFT_MODE], [1 for fftw3, 2 for kiss_fft])
 AC_DEFINE_UNQUOTED([FFT_MODE], [$FFT_MODE],
-                   [1 for fftw3, 2 for //TODO WHAT GOES HERE])
+                   [1 for fftw3, 2 for kiss_fft])
 
 AC_MSG_RESULT([
 option summary:

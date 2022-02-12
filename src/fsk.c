@@ -46,7 +46,7 @@ fsk_plan_new(
     fskp->f_mark = f_mark;
     fskp->f_space = f_space;
 
-#if(FFT_MODE == 1)
+#if(FFT_MODE == 1 || FFT_MODE == 2)
     fskp->band_width = filter_bw;
 
     float fft_half_bw = fskp->band_width / 2.0f;
@@ -64,8 +64,9 @@ fsk_plan_new(
     }
     debug_log("### b_mark=%u b_space=%u fftsize=%d\n",
 	    fskp->b_mark, fskp->b_space, fskp->fftsize);
+#endif
 
-
+#if(FFT_MODE == 1)
     // FIXME:
     unsigned int pa_nchannels = 1;
 
@@ -89,11 +90,21 @@ fsk_plan_new(
 	errno = EINVAL;
         return NULL;
     }
+#elif(FFT_MODE == 2)
+    // FIXME Channels not supported
+
+    fskp->fftcfg = kiss_fftr_alloc(fskp->fftsize, 0, NULL, NULL);
+
+    fskp->fftin  = KISS_FFT_MALLOC(fskp->fftsize * sizeof(kiss_fft_scalar));
+    //TODO Is bzero necessary?
+    bzero(fskp->fftin, (fskp->fftsize * sizeof(kiss_fft_scalar)));
+    fskp->fftout = KISS_FFT_MALLOC(fskp->fftsize * sizeof(kiss_fft_cpx));
 #endif
 
     return fskp;
 }
 
+#if(FFT_MODE == 1)
 void
 fsk_plan_destroy( fsk_plan *fskp )
 {
@@ -102,8 +113,19 @@ fsk_plan_destroy( fsk_plan *fskp )
     fftwf_destroy_plan(fskp->fftplan);
     free(fskp);
 }
+#elif(FFT_MODE == 2)
+void
+fsk_plan_destroy( fsk_plan *fskp )
+{
+    kiss_fftr_free(fskp->fftin);
+    kiss_fftr_free(fskp->fftout);
+    kiss_fftr_free(fskp->fftplan);
+    free(fskp);
+}
+#endif
 
 
+#if(FFT_MODE == 1)
 static inline float
 band_mag( fftwf_complex * const cplx, unsigned int band, float scalar )
 {
@@ -112,6 +134,16 @@ band_mag( fftwf_complex * const cplx, unsigned int band, float scalar )
     float mag = hypotf(re, im) * scalar;
     return mag;
 }
+#elif(FFT_MODE == 2)
+static inline float
+band_mag( kiss_fft_cpx * const cplx, unsigned int band, float scalar )
+{
+    float re = cplx[band].r;
+    float im = cplx[band].i;
+    float mag = hypotf(re, im) * scalar;
+    return mag;
+}
+#endif
 
 
 static void
@@ -127,7 +159,9 @@ fsk_bit_analyze( fsk_plan *fskp, float *samples, unsigned int bit_nsamples,
     // unsigned int pa_nchannels = 1;	// FIXME
     // bzero(fskp->fftin, (fskp->fftsize * sizeof(float) * pa_nchannels));
 
+#if(FFT_MODE == 1 || FFT_MODE == 2)
     memcpy(fskp->fftin, samples, bit_nsamples * sizeof(float));
+#endif
 
     float magscalar = 2.0f / (float)bit_nsamples;
 
@@ -153,10 +187,15 @@ fsk_bit_analyze( fsk_plan *fskp, float *samples, unsigned int bit_nsamples,
     }
 #endif
 
-
+#if(FFT_MODE == 1)
     fftwf_execute(fskp->fftplan);
+#elif(FFT_MODE == 2)
+    kiss_fftr(cfg, cx_in, cx_out);
+#endif
+#if(FFT_MODE == 1 || FFT_MODE == 2)
     float mag_mark  = band_mag(fskp->fftout, fskp->b_mark,  magscalar);
     float mag_space = band_mag(fskp->fftout, fskp->b_space, magscalar);
+#endif
     // mark==1, space==0
     if ( mag_mark > mag_space ) {
 	*bit_outp = 1;
@@ -544,12 +583,19 @@ int
 fsk_detect_carrier(fsk_plan *fskp, float *samples, unsigned int nsamples,
 	float min_mag_threshold )
 {
+#if(FFT_MODE == 1 || FFT_MODE == 2)
     assert( nsamples <= fskp->fftsize );
 
     unsigned int pa_nchannels = 1;	// FIXME
+#if(FFT_MODE == 1)
     bzero(fskp->fftin, (fskp->fftsize * sizeof(float) * pa_nchannels));
     memcpy(fskp->fftin, samples, nsamples * sizeof(float));
     fftwf_execute(fskp->fftplan);
+#elif(FFT_MODE == 2)
+    bzero(fskp->fftin, (fskp->fftsize * sizeof(kiss_fft_scalar) * pa_nchannels));
+    memcpy(fskp->fftin, samples, nsamples * sizeof(float)); // Uh...these OUGHT to be the same size....
+    kiss_fft(fskp->fftcfg, fskp->fftin, fskp->fftout);
+#endif
     float magscalar = 1.0f / ((float)nsamples/2.0f);
     float max_mag = 0.0;
     int max_mag_band = -1;
@@ -578,12 +624,14 @@ fsk_detect_carrier(fsk_plan *fskp, float *samples, unsigned int nsamples,
 	return -1;
 
     return max_mag_band;
+#endif 
 }
 
 
 void
 fsk_set_tones_by_bandshift( fsk_plan *fskp, unsigned int b_mark, int b_shift )
 {
+#if(FFT_MODE == 1 || FFT_MODE == 2)
     assert( b_shift != 0 );
     assert( b_mark < fskp->nbands ); 
 
@@ -595,5 +643,6 @@ fsk_set_tones_by_bandshift( fsk_plan *fskp, unsigned int b_mark, int b_shift )
     fskp->b_space = b_space;
     fskp->f_mark = b_mark * fskp->band_width;
     fskp->f_space = b_space * fskp->band_width;
+#endif
 }
 

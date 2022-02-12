@@ -18,13 +18,14 @@
  */
 
 #if(FFT_MODE == 1)
-#warning fft mode 1
-#elif(FFT_MODE == 2)
-#warning fft mode 2
-#endif
-
-#if(FFT_MODE == 1)
+#warning FFT_MODE 1
 #include <fftw3.h>
+#elif(FFT_MODE == 2)
+#warning FFT_MODE 2
+#include <kiss_fftr.h>
+#else
+#warning FFT_MODE ???
+#error Unsupported FFT_MODE
 #endif
 
 typedef struct fsk_plan fsk_plan;
@@ -35,15 +36,21 @@ struct fsk_plan {
     	float		f_space;
 	float		filter_bw;
 
-#if(FFT_MODE == 1)
+#if(FFT_MODE == 1 || FFT_MODE == 2)
 	int		fftsize;
 	unsigned int	nbands;
 	float		band_width;
 	unsigned int	b_mark;
 	unsigned int	b_space;
+#endif
+#if(FFT_MODE == 1)
 	fftwf_plan	fftplan;
 	float		*fftin;
 	fftwf_complex	*fftout;
+#elif(FFT_MODE == 2)
+        kiss_fftr_cfg    fftcfg;
+        kiss_fft_cpx    *fin;
+        kiss_fft_cpx    *fout;
 #endif
 };
 
