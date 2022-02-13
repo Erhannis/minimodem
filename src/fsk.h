@@ -30,7 +30,7 @@
 #include <fftw3.h>
 #elif(FFTMODE == 2)
 #warning FFTMODE 2
-#include <kiss_fftr.h>
+#include "kiss_fftr.h"
 #else
 #warning FFTMODE ???
 #error Unsupported FFTMODE
@@ -58,8 +58,8 @@ struct fsk_plan {
 	fftwf_complex	*fftout;
 #elif(FFTMODE == 2)
         kiss_fftr_cfg    fftcfg;
-        kiss_fft_cpx    *fin;
-        kiss_fft_cpx    *fout;
+        kiss_fft_scalar *fftin;
+        kiss_fft_cpx    *fftout;
 #endif
 };
 

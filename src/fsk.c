@@ -121,7 +121,7 @@ fsk_plan_destroy( fsk_plan *fskp )
 {
     kiss_fftr_free(fskp->fftin);
     kiss_fftr_free(fskp->fftout);
-    kiss_fftr_free(fskp->fftplan);
+    kiss_fftr_free(fskp->fftcfg);
     free(fskp);
 }
 #endif
@@ -192,7 +192,7 @@ fsk_bit_analyze( fsk_plan *fskp, float *samples, unsigned int bit_nsamples,
 #if(FFTMODE == 1)
     fftwf_execute(fskp->fftplan);
 #elif(FFTMODE == 2)
-    kiss_fftr(cfg, cx_in, cx_out);
+    kiss_fftr(fskp->fftcfg, fskp->fftin, fskp->fftout);
 #endif
 #if(FFTMODE == 1 || FFTMODE == 2)
     float mag_mark  = band_mag(fskp->fftout, fskp->b_mark,  magscalar);
@@ -596,7 +596,7 @@ fsk_detect_carrier(fsk_plan *fskp, float *samples, unsigned int nsamples,
 #elif(FFTMODE == 2)
     bzero(fskp->fftin, (fskp->fftsize * sizeof(kiss_fft_scalar) * pa_nchannels));
     memcpy(fskp->fftin, samples, nsamples * sizeof(float)); // Uh...these OUGHT to be the same size....
-    kiss_fft(fskp->fftcfg, fskp->fftin, fskp->fftout);
+    kiss_fftr(fskp->fftcfg, fskp->fftin, fskp->fftout);
 #endif
     float magscalar = 1.0f / ((float)nsamples/2.0f);
     float max_mag = 0.0;

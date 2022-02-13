@@ -40,7 +40,10 @@ SIMPLEAUDIO_SRC = \
 	simpleaudio-sndfile.c   \
         simpleaudio-stdio.c
 
-FSK_SRC = fsk.h fsk.c
+#//TODO Not sure how to make the inclusion of the kiss_fft code optional.
+FSK_SRC = fsk.h fsk.c \
+        kiss_fft.c    \
+        kiss_fftr.c
 
 BAUDOT_SRC = baudot.h baudot.c
 
