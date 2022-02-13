@@ -18,24 +18,16 @@
  */
 
 #ifdef HAVE_CONFIG_H
-#warning haveconfig
 #include "config.h"
-#else
-#warning donothaveconfig
 #endif
 
-#warning before
 #if(FFTMODE == 1)
-#warning FFTMODE 1
 #include <fftw3.h>
 #elif(FFTMODE == 2)
-#warning FFTMODE 2
 #include "kiss_fftr.h"
 #else
-#warning FFTMODE ???
 #error Unsupported FFTMODE
 #endif
-#warning after
 
 typedef struct fsk_plan fsk_plan;
 
