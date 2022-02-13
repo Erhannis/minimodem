@@ -27,7 +27,9 @@
 #include <ctype.h>
 #include <assert.h>
 
+#warning including fsk.h
 #include "fsk.h"
+#warning included fsk.h
 
 
 fsk_plan *

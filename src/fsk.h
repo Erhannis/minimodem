@@ -17,6 +17,13 @@
  *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#ifdef HAVE_CONFIG_H
+#warning haveconfig
+#include "config.h"
+#else
+#warning donothaveconfig
+#endif
+
 #warning before
 #if(FFTMODE == 1)
 #warning FFTMODE 1

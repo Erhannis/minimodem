@@ -88,6 +88,14 @@ AC_DEFINE_UNQUOTED([USE_BENCHMARKS], [$use_benchmarks],
 
 #   fft mode
 : ${FFT_MODE=1}
+# Not sure about this "x" business, but I'll trust there's a reason for it
+AS_IF([test "x$FFT_MODE" = "x1"], [
+    deps_packages="$deps_packages fftw3f"
+], [test "x$FFT_MODE" = "x2"], [
+    deps_packages="$deps_packages kiss_fft"
+], [
+
+])
 AC_ARG_VAR([FFT_MODE], [1 for fftw3, 2 for kiss_fft])
 AC_DEFINE_UNQUOTED([FFTMODE], [$FFT_MODE],
                    [1 for fftw3, 2 for kiss_fft])
