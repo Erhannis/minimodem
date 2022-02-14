@@ -110,7 +110,11 @@ option summary:
 ])
 
 # Checks for libraries.
-PKG_CHECK_MODULES(DEPS, [$deps_packages])
+AS_IF([test "x$deps_packages" = "x"], [
+# Nothing
+],[
+    PKG_CHECK_MODULES(DEPS, [$deps_packages])
+])
 
 AC_SUBST([auto_find_tests], ['$(sort $(wildcard *.test))'])
 
