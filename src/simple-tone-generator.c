@@ -26,6 +26,11 @@
 
 #include "simpleaudio.h"
 
+#ifdef NESTEDVM
+#define sinf(x) (float)sin((double)(x))
+#define lroundf(x) lround((double)(x))
+#define fmodf(x, y) (float)fmod((double)(x), (double)(y))
+#endif
 
 
 static float tone_mag = 1.0;

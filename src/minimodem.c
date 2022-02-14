@@ -31,7 +31,7 @@
 #include <assert.h>
 #include <signal.h>
 #include <sys/time.h>
-#include <sys/select.h>
+//#include <sys/select.h>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -179,7 +179,11 @@ static void fsk_transmit_stdin(
 	    tv_idletimeout.tv_usec = idle_carrier_usec;
 	}
 
+#ifdef NESTEDVM
         if( block_input || select(fd+1, &fdset, NULL, NULL, &tv_idletimeout) )
+#else
+        if( 1 )
+#endif
         {
 	    n_read = read(fd, &buf, sizeof(buf));
 	    if( n_read <= 0 ) //Includes EOF (0) and errors (-1)
