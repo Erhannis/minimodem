@@ -1,0 +1,1 @@
+./configure --without-alsa --without-benchmarks --without-pulseaudio --without-sndfile --without-sndio FFT_MODE=2
