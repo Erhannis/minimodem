@@ -31,7 +31,9 @@
 #include <assert.h>
 #include <signal.h>
 #include <sys/time.h>
-//#include <sys/select.h>
+#ifndef NESTEDVM
+#include <sys/select.h>
+#endif
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
