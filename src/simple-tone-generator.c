@@ -26,11 +26,11 @@
 
 #include "simpleaudio.h"
 
-#ifdef NESTEDVM
-#define sinf(x) (float)sin((double)(x))
-#define lroundf(x) lround((double)(x))
-#define fmodf(x, y) (float)fmod((double)(x), (double)(y))
-#endif
+//#ifdef NESTEDVM
+//#define sinf0(x) (float)sin((double)(x))
+//#define lroundf0(x) lround((double)(x))
+//#define fmodf0(x, y) (float)fmod((double)(x), (double)(y))
+//#endif
 
 
 static float tone_mag = 1.0;
@@ -39,11 +39,26 @@ static unsigned int sin_table_len;
 static short *sin_table_short;
 static float *sin_table_float;
 
+// Man, what the heck is going wrong with the linking
+double
+sin0( double x ) {
+    return 0;//sin(x);
+}
+
+//#define lroundf0(x) lround((double)(x))
+long int
+lround0( double x ) {
+    return 0;//lround(x);
+}
+
 void
 simpleaudio_tone_init( unsigned int new_sin_table_len, float mag )
 {
     sin_table_len = new_sin_table_len;
     tone_mag = mag;
+    fprintf(stderr, "sin %f", sin0(4.0f));
+    fprintf(stderr, "f sin d %f", (float)sin0((double)4.0f));
+    fprintf(stderr, "sinf0 %f", sinf(4.0f));
 
     if ( sin_table_len != 0 ) {
 	sin_table_short = realloc(sin_table_short, sin_table_len * sizeof(short));
@@ -59,10 +74,18 @@ simpleaudio_tone_init( unsigned int new_sin_table_len, float mag )
 	    mag_s = 32767;
 	if ( mag_s < 1 ) // "short epsilon"
 	    mag_s = 1;
-	for ( i=0; i<sin_table_len; i++ )
-	    sin_table_short[i] = lroundf( mag_s * sinf((float)M_PI*2*i/sin_table_len) );
-	for ( i=0; i<sin_table_len; i++ )
-	    sin_table_float[i] = tone_mag * sinf((float)M_PI*2*i/sin_table_len);
+	for ( i=0; i<sin_table_len; i++ ) {
+	    fprintf(stderr, "sin %f", sin0(4.0));
+            float tmp = (float)M_PI*2*i/sin_table_len;
+	    fprintf(stderr, "sin %f", sin0(tmp));
+            float tmp2 = sin0(tmp);
+	    sin_table_short[i] = lround0((double) mag_s * tmp2 );
+	}
+	for ( i=0; i<sin_table_len; i++ ) {
+            float tmp = (float)M_PI*2*i/sin_table_len;
+            float tmp2 = sin0(tmp);
+	    sin_table_float[i] = tone_mag * tmp2;
+        }
 
     } else {
 	if ( sin_table_short ) {
@@ -136,7 +159,7 @@ simpleaudio_tone(simpleaudio *sa_out, float tone_freq, size_t nsamples_dur)
 			    float_buf[i] = sin_lu_float(SINE_PHASE_TURNS);
 		    } else {
 			for ( i=0; i<nsamples_dur; i++ )
-			    float_buf[i] = tone_mag * sinf(SINE_PHASE_RADIANS);
+			    float_buf[i] = tone_mag * 1; //sinf(SINE_PHASE_RADIANS);
 		    }
 		}
 		break;
@@ -154,7 +177,7 @@ simpleaudio_tone(simpleaudio *sa_out, float tone_freq, size_t nsamples_dur)
 			if ( mag_s < 1 ) // "short epsilon"
 			    mag_s = 1;
 			for ( i=0; i<nsamples_dur; i++ )
-			    short_buf[i] = lroundf( mag_s * sinf(SINE_PHASE_RADIANS) );
+			    short_buf[i] =  0; // lroundf( mag_s * sinf(SINE_PHASE_RADIANS) );
 		    }
 		    break;
 		}
@@ -165,7 +188,7 @@ simpleaudio_tone(simpleaudio *sa_out, float tone_freq, size_t nsamples_dur)
 	}
 
 	sa_tone_cphase
-	    = fmodf(sa_tone_cphase + (float)nsamples_dur/wave_nsamples, 1.0);
+	    = 0; //fmodf(sa_tone_cphase + (float)nsamples_dur/wave_nsamples, 1.0);
 
     } else {
 

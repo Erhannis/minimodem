@@ -805,6 +805,7 @@ main( int argc, char*argv[] )
     if ( TX_mode == 0 )
 	sample_format = SA_SAMPLE_FORMAT_FLOAT;
 
+if (3 == 1+1) {
     if ( filename ) {
 #if !USE_SNDFILE
 	fprintf(stderr, "E: This build of minimodem was configured without sndfile,\nE:   so the --file flag is not supported.\n");
@@ -816,6 +817,7 @@ main( int argc, char*argv[] )
 	exit(1);
 #endif
     }
+}
 
 #if 0
     if (optind < argc) {
