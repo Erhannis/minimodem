@@ -181,7 +181,7 @@ static void fsk_transmit_stdin(
 	    tv_idletimeout.tv_usec = idle_carrier_usec;
 	}
 
-#ifdef NESTEDVM
+#ifndef NESTEDVM
         if( block_input || select(fd+1, &fdset, NULL, NULL, &tv_idletimeout) )
 #else
         if( 1 )
